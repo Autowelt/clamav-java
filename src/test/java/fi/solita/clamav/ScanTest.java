@@ -15,20 +15,18 @@
  */
 package fi.solita.clamav;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * @author bbpennel
@@ -38,16 +36,15 @@ public class ScanTest {
     private static final String EICAR =
             "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*";
 
-    @Rule
-    public final TemporaryFolder tmpFolder = new TemporaryFolder();
+    @TempDir
+    public Path tmpFolder;
 
     private ClamAVClient client;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
-        tmpFolder.create();
         // Make sure clam has access to read the directory we are writing files to
-        Files.setPosixFilePermissions(tmpFolder.getRoot().toPath(),
+        Files.setPosixFilePermissions(tmpFolder,
                 PosixFilePermissions.fromString("rwxr-xr-x"));
         client = new ClamAVClient(CLAMAV_HOST, 3310);
     }
@@ -59,7 +56,7 @@ public class ScanTest {
         ScanResult result = client.scanWithResult(scanPath);
         assertEquals(ScanResult.Status.FOUND, result.getStatus());
         String sig = result.getSignature().toLowerCase();
-        assertTrue("Signature did not list eicar", sig.contains("eicar"));
+        assertTrue(sig.contains("eicar"), "Signature did not list eicar");
     }
 
     @Test
@@ -72,14 +69,15 @@ public class ScanTest {
 
     @Test
     public void testFileNotFound() throws Exception {
-        File scanFile = new File(tmpFolder.getRoot(), "notExist.txt");
-        ScanResult result = client.scanWithResult(scanFile.toPath());
+        Path scanPath = tmpFolder.resolve("notExist.txt");
+        ScanResult result = client.scanWithResult(scanPath);
         assertEquals(ScanResult.Status.ERROR, result.getStatus());
         assertNull(result.getSignature());
     }
 
     private Path createTestFile(String content) throws IOException {
-        Path scanPath = tmpFolder.newFile().toPath();
+        Path scanPath = tmpFolder.resolve("scan");
+        Files.createFile(scanPath);
         Files.write(scanPath, content.getBytes("ASCII"));
         Files.setPosixFilePermissions(scanPath, PosixFilePermissions.fromString("rw-rw-r--"));
         return scanPath;
