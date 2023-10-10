@@ -1,12 +1,12 @@
 /**
  * Copyright 2008 The University of North Carolina at Chapel Hill
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,27 +15,25 @@
  */
 package fi.solita.clamav;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author bbpennel
  */
 public class ScanTest {
-    private static String CLAMAV_HOST = "localhost";
     private static final String EICAR =
             "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*";
-
+    private static final String CLAMAV_HOST = "localhost";
     @TempDir
     public Path tmpFolder;
 
@@ -78,7 +76,7 @@ public class ScanTest {
     private Path createTestFile(String content) throws IOException {
         Path scanPath = tmpFolder.resolve("scan");
         Files.createFile(scanPath);
-        Files.write(scanPath, content.getBytes("ASCII"));
+        Files.write(scanPath, content.getBytes(StandardCharsets.US_ASCII));
         Files.setPosixFilePermissions(scanPath, PosixFilePermissions.fromString("rw-rw-r--"));
         return scanPath;
     }
