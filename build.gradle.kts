@@ -21,6 +21,27 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
 }
 
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Autowelt/clamav-client")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        register("jar", MavenPublication::class) {
+            from(components["java"])
+            group = group
+            artifactId = "clamav-java"
+            version = version
+        }
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
