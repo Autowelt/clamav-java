@@ -1,8 +1,8 @@
 plugins {
-    java
-
+    id("java")
     id("idea")
     id("org.owasp.dependencycheck") version "8.3.1"
+    id("maven-publish")
 }
 
 group = "fi.solita.clamav"
