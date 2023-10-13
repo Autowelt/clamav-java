@@ -1,4 +1,4 @@
-name: Lint Publish
+name: Publish
 
 on:
   push:
