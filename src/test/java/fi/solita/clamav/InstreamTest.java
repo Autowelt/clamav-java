@@ -21,11 +21,11 @@ public class InstreamTest extends AbstractTest {
     private static final String EICAR =
             "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*";
 
-    private byte[] scan(byte[] input) throws UnknownHostException, IOException {
+    private byte[] scan(byte[] input) throws IOException {
         return this.clamAVClient.scan(input);
     }
 
-    private byte[] scan(InputStream input) throws UnknownHostException, IOException {
+    private byte[] scan(InputStream input) throws IOException {
         return this.clamAVClient.scan(input);
     }
 
@@ -35,13 +35,13 @@ public class InstreamTest extends AbstractTest {
     }
 
     @Test
-    public void testRandomBytes() throws UnknownHostException, IOException {
+    public void testRandomBytes() throws IOException {
         byte[] r = scan("alsdklaksdla".getBytes(java.nio.charset.StandardCharsets.US_ASCII));
         assertTrue(ClamAVClient.isCleanReply(r));
     }
 
     @Test
-    public void testPositive() throws UnknownHostException, IOException {
+    public void testPositive() throws IOException {
         // http://www.eicar.org/86-0-Intended-use.html
         byte[] bytes = EICAR.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
         byte[] r = scan(bytes);
@@ -49,35 +49,28 @@ public class InstreamTest extends AbstractTest {
     }
 
     @Test
-    public void testStreamChunkingWorks() throws UnknownHostException, IOException {
+    public void testStreamChunkingWorks() throws IOException {
         byte[] multipleChunks = new byte[50000];
         byte[] r = scan(multipleChunks);
         assertTrue(ClamAVClient.isCleanReply(r));
     }
 
     @Test
-    public void testChunkLimit() throws UnknownHostException, IOException {
+    public void testChunkLimit() throws IOException {
         byte[] maximumChunk = new byte[2048];
         byte[] r = scan(maximumChunk);
         assertTrue(ClamAVClient.isCleanReply(r));
     }
 
     @Test
-    public void testZeroBytes() throws UnknownHostException, IOException {
+    public void testZeroBytes() throws IOException {
         byte[] r = scan(new byte[]{});
         assertTrue(ClamAVClient.isCleanReply(r));
     }
 
-//    @Test
-//    public void testSizeLimit() throws UnknownHostException, IOException {
-//        Assertions.assertThrows(ClamAVSizeLimitException.class, () -> {
-//            scan(new SlowInputStream());
-//        });
-//    }
-
     // Only the first 10000 bytes will be scanned, so it will not reach size limit
     @Test
-    public void testMaxStreamSize() throws UnknownHostException, IOException {
+    public void testMaxStreamSize() {
         this.clamAVClient.setMaxStreamSize(10000);
         ScanResult result = this.clamAVClient.scanWithResult(new SlowInputStream());
         assertEquals(ScanResult.Status.PASSED, result.getStatus());
@@ -85,7 +78,7 @@ public class InstreamTest extends AbstractTest {
 
     //Only the first 10000 bytes will be scanned, so it will not reach size limit
     @Test
-    public void testMaxStreamSizePositive() throws UnknownHostException, IOException {
+    public void testMaxStreamSizePositive() {
 
         this.clamAVClient.setMaxStreamSize(10000);
         byte[] bytes = EICAR.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
