@@ -1,8 +1,8 @@
 plugins {
-    java
-
+    id("java")
     id("idea")
     id("org.owasp.dependencycheck") version "8.3.1"
+    id("maven-publish")
 }
 
 group = "fi.solita.clamav"
@@ -23,6 +23,27 @@ dependencies {
     implementation(platform("org.testcontainers:testcontainers-bom:1.19.2"))
     testImplementation("org.testcontainers:junit-jupiter:1.19.2")
     testImplementation("net.java.dev.jna:jna:5.7.0")
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Autowelt/clamav-client")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        register("jar", MavenPublication::class) {
+            from(components["java"])
+            group = group
+            artifactId = "clamav-java"
+            version = version
+        }
+    }
 }
 
 tasks.withType<Test> {
