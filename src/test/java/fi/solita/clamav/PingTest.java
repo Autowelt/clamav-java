@@ -10,11 +10,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * These tests assume clamd is running and responding in the virtual machine.
  */
-public class PingTest {
+public class PingTest extends AbstractTest {
+
+    private ClamAVClient clamAVClient;
+
+    @org.junit.jupiter.api.BeforeEach
+    public void setupTest() {
+        this.clamAVClient = new ClamAVClient(clamAvContainer.getHost(), clamAvContainer.getMappedPort(3310));
+    }
 
     @Test
     public void testPingPong() throws IOException {
-        ClamAVClient cl = new ClamAVClient("localhost", 3310);
-        assertTrue(cl.ping());
+        assertTrue(clamAVClient.ping());
     }
 }
